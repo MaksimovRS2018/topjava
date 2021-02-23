@@ -9,11 +9,13 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class UserMealsUtil {
     private static int actualCalories = 0;
-    private static int actualDay = 0;
-    private static boolean excess = false;
+    private static int actualDay = -1;
+    private static boolean excess = true;
 
     public static void main(String[] args) {
         List<UserMeal> meals = Arrays.asList(
@@ -33,19 +35,23 @@ public class UserMealsUtil {
     }
 
     public static List<UserMealWithExcess> filteredByStreams(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        List<UserMealWithExcess> ListUserMealWithExcess = new ArrayList<>();
-        meals.stream().filter(fil -> TimeUtil.isBetweenHalfOpen(fil.getDateTime().toLocalTime(), startTime, endTime)).forEach(e -> {
-
-            if (actualDay != e.getDateTime().getDayOfMonth()) {
-                actualDay = e.getDateTime().getDayOfMonth();
-                excess = false;
-                actualCalories = 0;
-            }
-            actualCalories = actualCalories + e.getCalories();
-            if (actualCalories >= caloriesPerDay) excess = true;
-            UserMealWithExcess newUser = new UserMealWithExcess(e.getDateTime(), e.getDescription(), e.getCalories(), excess);
-            ListUserMealWithExcess.add(newUser);
-        });
+        List<UserMealWithExcess> ListUserMealWithExcess =
+        meals.stream().filter(fil -> TimeUtil.isBetweenHalfOpen(fil.getDateTime().toLocalTime(), startTime, endTime))
+                .map(new Function<UserMeal, UserMealWithExcess>() {
+                    @Override
+                    public UserMealWithExcess apply(UserMeal userMeal) {
+                        if (actualDay == -1){
+                            actualDay = userMeal.getDateTime().getDayOfMonth();
+                        }
+                        if (actualDay!=userMeal.getDateTime().getDayOfMonth()){
+                            excess = true;
+                            actualCalories = 0;
+                        }
+                        actualCalories = userMeal.getCalories() + actualCalories;
+                        if (actualCalories>caloriesPerDay) excess = false;
+                        return new UserMealWithExcess(userMeal.getDateTime(), userMeal.getDescription(), userMeal.getCalories(), excess);
+                    }
+                }).collect(Collectors.toList());
         return ListUserMealWithExcess;
     }
 
