@@ -19,6 +19,7 @@
 <h3><a href="index.html">Home</a></h3>
 <hr>
 <a href="addMeal.jsp">add meal</a>
+
 <table border="1">
     <caption>Table</caption>
     <tr>

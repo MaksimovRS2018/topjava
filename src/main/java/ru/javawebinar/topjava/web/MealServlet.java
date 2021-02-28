@@ -23,12 +23,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = getLogger(MealServlet.class);
-    private LocalDateTime dateTimeReq;
-    private String descriptionReq;
-    private int caloriesReq;
-
-    private MealsUtil mealsUtilForUser;
-
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -37,7 +31,7 @@ public class MealServlet extends HttpServlet {
         String nameXML = req.getRequestURL().toString().split("/")[4];
 
         if (nameXML.equals("meals")) {
-            mealsUtilForUser = (MealsUtil) currentSession.getAttribute("meals");
+            MealsUtil mealsUtilForUser = (MealsUtil) currentSession.getAttribute("meals");
 
             if (mealsUtilForUser == null) {
                 mealsUtilForUser = new MealsUtil();
@@ -45,21 +39,21 @@ public class MealServlet extends HttpServlet {
             }
 
             log.debug("redirect to meals");
-//        resp.sendRedirect("meal.jsp");
+
             currentSession.setAttribute("meals", mealsUtilForUser);
             RequestDispatcher requestDispatcher = req.getRequestDispatcher("meal.jsp");
             requestDispatcher.forward(req, resp);
 
         } else {
-
-            dateTimeReq = parseTime(req.getParameter("datetime"));
-            descriptionReq = (String) req.getParameter("description");
-            caloriesReq = Integer.parseInt(req.getParameter("calories"));
-
-            mealsUtilForUser = (MealsUtil) currentSession.getAttribute("meals");
+            log.debug("redirect to add meals");
+            LocalDateTime dateTimeReq = parseTime(req.getParameter("datetime"));
+            String descriptionReq = (String) req.getParameter("description");
+            int caloriesReq = Integer.parseInt(req.getParameter("calories"));
+            MealsUtil mealsUtilForUser = (MealsUtil) currentSession.getAttribute("meals");
             List<Meal> actualListMeal = mealsUtilForUser.getMeals();
             actualListMeal.add(new Meal(dateTimeReq,descriptionReq,caloriesReq));
             mealsUtilForUser.setMeals(actualListMeal);
+            mealsUtilForUser.main();
             currentSession.setAttribute("meals", mealsUtilForUser);
             RequestDispatcher requestDispatcher = req.getRequestDispatcher("addMeal.jsp");
             requestDispatcher.forward(req, resp);

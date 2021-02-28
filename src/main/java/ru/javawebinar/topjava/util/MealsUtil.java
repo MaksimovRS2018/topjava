@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.ToIntFunction;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 public class MealsUtil {
@@ -21,7 +23,7 @@ public class MealsUtil {
     private List<Meal> meals = new ArrayList<>();
 
     public MealsUtil() {
-        meals = Arrays.asList(
+        meals = new ArrayList<>(Arrays.asList(
                 new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
                 new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000),
                 new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500),
@@ -35,7 +37,7 @@ public class MealsUtil {
                 new Meal(LocalDateTime.of(2020, Month.JANUARY, 29, 10, 0), "Завтрак", 1000),
                 new Meal(LocalDateTime.of(2020, Month.JANUARY, 29, 13, 0), "Обед", 300),
                 new Meal(LocalDateTime.of(2020, Month.JANUARY, 29, 20, 0), "Ужин", 710)
-        );
+        ));
 
 
 //        meals.add(new Meal(LocalDateTime.of(2022, Month.JANUARY, 25, 10, 0), "Завтрак", 250));
@@ -49,13 +51,17 @@ public class MealsUtil {
     public static List<MealTo> filteredByStreams(List<Meal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         Map<LocalDate, Integer> caloriesSumByDate = meals.stream()
                 .collect(
-                        Collectors.groupingBy(Meal::getDate, Collectors.summingInt(Meal::getCalories))
+                        Collectors.groupingBy(Meal::getDate, Collectors.summingInt(new ToIntFunction<Meal>() {
+                            @Override
+                            public int applyAsInt(Meal value) {
+                                return value.getCalories();
+                            }
+                        }))
                 );
 
         return meals.stream()
                 .filter(meal -> TimeUtil.isBetweenHalfOpen(meal.getTime(), startTime, endTime))
                 .map(meal -> createTo(meal, caloriesSumByDate.get(meal.getDate()) > caloriesPerDay))
-                .sorted(((o1, o2) -> o1.getDateTime().getDayOfMonth() - o2.getDateTime().getDayOfMonth()))
                 .collect(Collectors.toList());
     }
 
