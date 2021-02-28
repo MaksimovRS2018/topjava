@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.ToIntFunction;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ public class MealsUtil {
     private static int endTime = 23;
     private static int caloriesPerDay = 2000;
     private List<Meal> meals = new ArrayList<>();
+
 
     public MealsUtil() {
         meals = new ArrayList<>(Arrays.asList(
@@ -38,31 +40,32 @@ public class MealsUtil {
                 new Meal(LocalDateTime.of(2020, Month.JANUARY, 29, 13, 0), "Обед", 300),
                 new Meal(LocalDateTime.of(2020, Month.JANUARY, 29, 20, 0), "Ужин", 710)
         ));
-
-
-//        meals.add(new Meal(LocalDateTime.of(2022, Month.JANUARY, 25, 10, 0), "Завтрак", 250));
     }
 
     public void main() {
         mealsTo = filteredByStreams(meals, LocalTime.of(startTime, 0), LocalTime.of(endTime, 0), caloriesPerDay);
     }
 
-
     public static List<MealTo> filteredByStreams(List<Meal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        Map<LocalDate, Integer> caloriesSumByDate = meals.stream()
-                .collect(
-                        Collectors.groupingBy(Meal::getDate, Collectors.summingInt(new ToIntFunction<Meal>() {
-                            @Override
-                            public int applyAsInt(Meal value) {
-                                return value.getCalories();
-                            }
-                        }))
-                );
 
-        return meals.stream()
-                .filter(meal -> TimeUtil.isBetweenHalfOpen(meal.getTime(), startTime, endTime))
-                .map(meal -> createTo(meal, caloriesSumByDate.get(meal.getDate()) > caloriesPerDay))
-                .collect(Collectors.toList());
+        List<MealTo> ListUserMealWithExcess = new ArrayList<>();
+        meals.stream()
+                //create Map <day, list description>
+                .collect(Collectors.groupingBy(user -> user.getDateTime().getDayOfMonth())).forEach(new BiConsumer<Integer, List<Meal>>() {
+            @Override
+            public void accept(Integer integer, List<Meal> userMeals) {
+                int actualCalories = userMeals.stream().mapToInt(Meal::getCalories).sum();
+                userMeals.forEach(elementUser -> {
+                    if (actualCalories > caloriesPerDay) {
+                        ListUserMealWithExcess.add(new MealTo(elementUser.getDateTime(), elementUser.getDescription(), elementUser.getCalories(), false));
+                    } else {
+                        ListUserMealWithExcess.add(new MealTo(elementUser.getDateTime(), elementUser.getDescription(), elementUser.getCalories(), true));
+                    }
+                });
+            }
+        });
+        return ListUserMealWithExcess.stream().filter(fil ->
+                TimeUtil.isBetweenHalfOpen(fil.getDateTime().toLocalTime(), startTime, endTime)).collect(Collectors.toList());
     }
 
     private static MealTo createTo(Meal meal, boolean excess) {
