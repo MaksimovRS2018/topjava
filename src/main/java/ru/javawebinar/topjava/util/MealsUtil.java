@@ -17,7 +17,8 @@ import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 public class MealsUtil {
-    private List<MealTo> mealsTo = new ArrayList<>();;
+    private List<MealTo> mealsTo = new ArrayList<>();
+    ;
     private static int startTime = 0;
     private static int endTime = 23;
     private static int caloriesPerDay = 2000;
@@ -65,7 +66,13 @@ public class MealsUtil {
             }
         });
         return ListUserMealWithExcess.stream().filter(fil ->
-                TimeUtil.isBetweenHalfOpen(fil.getDateTime().toLocalTime(), startTime, endTime)).collect(Collectors.toList());
+                TimeUtil.isBetweenHalfOpen(fil.getDateTime().toLocalTime(), startTime, endTime))
+                .sorted(((o1, o2) -> o2.getDateTime().getYear() - o1.getDateTime().getYear() &
+                        o2.getDateTime().getMonthValue() - o1.getDateTime().getMonthValue() &
+                        o2.getDateTime().getDayOfMonth() - o1.getDateTime().getDayOfMonth() &
+                        o2.getDateTime().getHour() - o1.getDateTime().getHour() &
+                        o2.getDateTime().getMinute() - o1.getDateTime().getMinute()
+                )).collect(Collectors.toList());
     }
 
     private static MealTo createTo(Meal meal, boolean excess) {

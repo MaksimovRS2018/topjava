@@ -20,12 +20,15 @@
 <hr>
 <a href="addMeal.jsp">add meal</a>
 
-<table border="1">
+<table border="1" >
     <caption>Table</caption>
+
     <tr>
         <th>Date</th>
         <th>Description</th>
         <th>Calories</th>
+        <th><form action="editMeal"><input type="submit" name="update" value="Update"></form></th>
+        <th><form action="deleteMeal"><input type="submit" name="deleteBut" value="Delete"></form></th>
     </tr>
     <% MealsUtil MealToForUser = (MealsUtil) session.getAttribute("meals");
         List<MealTo> listMealToForUser = MealToForUser.getMealsTo();
@@ -33,10 +36,13 @@
             MealTo oneMealTo = listMealToForUser.get(i);
             out.println(
                     "<tr>" +
-                    "<td><font  color=" + Color.valueOf(oneMealTo.isExcess() ? "red" : "green") + ">" + oneMealTo.getDateTime() + "</font></td>" +
-                    "<td><font  color=" + Color.valueOf(oneMealTo.isExcess() ? "red" : "green") + ">" + oneMealTo.getDescription() + "</font></td>" +
-                    "<td><font  color=" + Color.valueOf(oneMealTo.isExcess() ? "red" : "green") + ">" + oneMealTo.getCalories() + "</font></td>" +
-                    "</tr>");
+                            "<td><font  color=" + Color.valueOf(oneMealTo.isExcess() ? "green" : "red") + ">" + oneMealTo.getDateTime().toString().split("T")[0] +
+                            " " + oneMealTo.getDateTime().toString().split("T")[1] + "</font></td>" +
+                            "<td><font  color=" + Color.valueOf(oneMealTo.isExcess() ? "green" : "red") + ">" + oneMealTo.getDescription() + "</font></td>" +
+                            "<td><font  color=" + Color.valueOf(oneMealTo.isExcess() ? "green" : "red") + ">" + oneMealTo.getCalories() + "</font></td>" +
+                            "<td><input type=\"radio\" name=\"edit\" value=edit\"" + (i + 1) + "\">" + (i + 1) + "</td>" +
+                            "<td><input type=\"radio\" name=\"delete\" value=delete\"" + (i + 1) + "\">" + (i + 1) + "</td>" +
+                            "</tr>");
         }
     %>
 

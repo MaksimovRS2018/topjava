@@ -44,7 +44,7 @@ public class MealServlet extends HttpServlet {
             RequestDispatcher requestDispatcher = req.getRequestDispatcher("meal.jsp");
             requestDispatcher.forward(req, resp);
 
-        } else {
+        } else if (nameXML.equals("addMeal")){
             log.debug("redirect to add meals");
             LocalDateTime dateTimeReq = parseTime(req.getParameter("datetime"));
             String descriptionReq = (String) req.getParameter("description");
@@ -57,6 +57,20 @@ public class MealServlet extends HttpServlet {
             currentSession.setAttribute("meals", mealsUtilForUser);
             RequestDispatcher requestDispatcher = req.getRequestDispatcher("addMeal.jsp");
             requestDispatcher.forward(req, resp);
+
+        } else {
+            log.debug("redirect to edit meals");
+            String name = req.getParameter("delete");
+            String edit =  req.getParameter("edit1");
+            String update = req.getParameter("update");
+            String deleteBut = req.getParameter("deleteBut");
+            String s =  req.getCharacterEncoding();
+
+
+
+            RequestDispatcher requestDispatcher = req.getRequestDispatcher("editMeal.jsp");
+            requestDispatcher.forward(req, resp);
+
 
         }
 
