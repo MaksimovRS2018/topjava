@@ -35,6 +35,11 @@
 
     <servlet-mapping>
         <servlet-name>mealServlet</servlet-name>
+        <url-pattern>/updateMeal</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>mealServlet</servlet-name>
         <url-pattern>/deleteMeal</url-pattern>
     </servlet-mapping>
 

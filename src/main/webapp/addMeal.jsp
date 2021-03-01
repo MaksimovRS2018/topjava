@@ -12,7 +12,7 @@
 </head>
 <hr>
 <form action="meals">
-    <a href="meal.jsp">back</a>
+    <a href="meals.jsp">back</a>
 </form>
 <body>
 <form action="addMeal">
@@ -23,7 +23,7 @@
         <input type="text" name="description" size="40">
     </p>
     <p><b>Calories:</b><br>
-        <input type="text" name="calories" size="40">
+        <input type="number" name="calories" size="40">
     </p>
     <p><input type="submit" value="Add"></p>
 </form>

@@ -7,10 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.ToIntFunction;
 import java.util.function.ToIntFunction;
@@ -22,7 +19,7 @@ public class MealsUtil {
     private static int startTime = 0;
     private static int endTime = 23;
     private static int caloriesPerDay = 2000;
-    private List<Meal> meals = new ArrayList<>();
+    private List<Meal> meals;
 
 
     public MealsUtil() {
@@ -41,7 +38,16 @@ public class MealsUtil {
                 new Meal(LocalDateTime.of(2020, Month.JANUARY, 29, 13, 0), "Обед", 300),
                 new Meal(LocalDateTime.of(2020, Month.JANUARY, 29, 20, 0), "Ужин", 710)
         ));
+        meals.sort(((o1, o2) -> o2.getDateTime().getYear() - o1.getDateTime().getYear() &
+                o2.getDateTime().getMonthValue() - o1.getDateTime().getMonthValue() &
+                o2.getDateTime().getDayOfMonth() - o1.getDateTime().getDayOfMonth() &
+                o2.getDateTime().getHour() - o1.getDateTime().getHour() &
+                o2.getDateTime().getMinute() - o1.getDateTime().getMinute()
+        ));
+
+
     }
+
 
     public void main() {
         mealsTo = filteredByStreams(meals, LocalTime.of(startTime, 0), LocalTime.of(endTime, 0), caloriesPerDay);
@@ -75,9 +81,6 @@ public class MealsUtil {
                 )).collect(Collectors.toList());
     }
 
-    private static MealTo createTo(Meal meal, boolean excess) {
-        return new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
-    }
 
     public List<MealTo> getMealsTo() {
         return mealsTo;
@@ -96,11 +99,19 @@ public class MealsUtil {
     }
 
     public void setMeals(List<Meal> meals) {
-        this.meals = meals;
+        this.meals = meals.stream().sorted((o1, o2) -> o2.getDateTime().getYear() - o1.getDateTime().getYear() &
+                o2.getDateTime().getMonthValue() - o1.getDateTime().getMonthValue() &
+                o2.getDateTime().getDayOfMonth() - o1.getDateTime().getDayOfMonth() &
+                o2.getDateTime().getHour() - o1.getDateTime().getHour() &
+                o2.getDateTime().getMinute() - o1.getDateTime().getMinute()).collect(Collectors.toList());
     }
 
     public List<Meal> getMeals() {
-        return meals;
+        return meals.stream().sorted((o1, o2) -> o2.getDateTime().getYear() - o1.getDateTime().getYear() &
+                o2.getDateTime().getMonthValue() - o1.getDateTime().getMonthValue() &
+                o2.getDateTime().getDayOfMonth() - o1.getDateTime().getDayOfMonth() &
+                o2.getDateTime().getHour() - o1.getDateTime().getHour() &
+                o2.getDateTime().getMinute() - o1.getDateTime().getMinute()).collect(Collectors.toList());
     }
 
 }
